@@ -1,0 +1,70 @@
+name: GitHub Actions
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+permissions: write-all
+
+concurrency:
+  group: actions-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: ghcr.io/simonprinz/pgpql
+
+jobs:
+  docker_test:
+    name: Test Docker Image
+    if: "!(github.event_name == 'release' && github.ref_type == 'tag') && github.event_name == 'pull_request' && github.ref_type == 'branch' && github.ref_name != 'main'"
+    env:
+      VERSION: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Checkout
+        uses: actions/checkout@v4
+        with:
+          # use custom token to trigger workflows
+          token: ${{ secrets.GHPAT || github.token }}
+      - name: 🚧 Build the Docker image
+        run: docker build . -f Dockerfile -t ${IMAGE_NAME}:${VERSION}
+  docker_build-latest:
+    name: Build Latest Docker Image
+    if: "github.event_name == 'push' && github.ref_type == 'branch' && github.ref_name == 'main'"
+    env:
+      VERSION: "latest"
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Checkout
+        uses: actions/checkout@v4
+        with:
+          # use custom token to trigger workflows
+          token: ${{ secrets.GHPAT || github.token }}
+      - name: 🔐 Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $ --password-stdin
+      - name: 🚧 Build the Docker image
+        run: docker build . -f Dockerfile -t ${IMAGE_NAME}:${VERSION}
+      - name: ⤴️ Push the Docker image to GitHub Container Registry
+        run: docker push ${IMAGE_NAME}:${VERSION}
+  docker_build-release:
+    name: Build Release Docker Image
+    if: "github.event_name == 'release' && github.ref_type == 'tag'"
+    env:
+      VERSION: ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Checkout
+        uses: actions/checkout@v4
+        with:
+          # use custom token to trigger workflows
+          token: ${{ secrets.GHPAT || github.token }}
+      - name: 🔐 Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $ --password-stdin
+      - name: 🚧 Build the Docker image
+        run: docker build . -f Dockerfile -t ${IMAGE_NAME}:${VERSION}
+      - name: ⤴️ Push the Docker image to GitHub Container Registry
+        run: docker push ${IMAGE_NAME}:${VERSION}

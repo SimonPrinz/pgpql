@@ -1,7 +1,5 @@
 # pgpql
 
-[![GitHub license](https://img.shields.io/github/license/SimonPrinz/pgpql)](https://github.com/SimonPrinz/pgpql/blob/main/LICENSE)
-
 💡 GraphQL API that provides OpenPGP functionality.
 
 ## Usage
@@ -22,4 +20,3 @@ npm install && npm run build && npm run start
 ## License
 
 This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
-
