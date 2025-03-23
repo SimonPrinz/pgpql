@@ -1,8 +1,9 @@
 import {Field, ObjectType} from 'type-graphql';
 import * as openpgp from 'openpgp';
+import {IKey} from "./IKey";
 
-@ObjectType()
-export class SubKey {
+@ObjectType({implements: [IKey]})
+export class SubKey implements IKey {
     @Field()
     public get id(): string {
         return this.subKey.getKeyID().toHex();
@@ -17,7 +18,6 @@ export class SubKey {
     public get curve(): string | undefined {
         return this.subKey.getAlgorithmInfo().curve;
     }
-
 
     @Field()
     public algorithm(): string {

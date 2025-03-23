@@ -2,12 +2,12 @@ import {Field, ObjectType} from 'type-graphql';
 import {User} from './User';
 import * as openpgp from 'openpgp';
 import {SubKey} from './SubKey';
+import {IKey} from "./IKey";
 
-@ObjectType()
-export class Key {
+@ObjectType({implements: [IKey]})
+export class Key implements IKey {
     @Field()
     public get id(): string {
-        console.log(this.key.keyPacket);
         return this.key.getKeyID().toHex();
     }
 

@@ -3,7 +3,8 @@ import {Server, createServer} from 'http';
 import express, {Application} from 'express';
 import logger from 'morgan';
 import {buildSchema} from 'type-graphql';
-import {graphqlHTTP} from 'express-graphql';
+import {createHandler} from 'graphql-http/lib/use/express';
+import graphqlPlayground from 'graphql-playground-middleware-express';
 import {QueryResolver} from './resolvers/QueryResolver';
 
 export default class App {
@@ -22,15 +23,21 @@ export default class App {
     }
 
     private async graphql(): Promise<void> {
+        this.app.get('/', graphqlPlayground({
+            endpoint: '/api',
+        }));
+
         const schema = await buildSchema({
             resolvers: [
                 QueryResolver,
             ]
         });
-        this.app.use(graphqlHTTP({
-            schema,
-            graphiql: true
-        }));
+        this.app.all(
+            '/api',
+            createHandler({
+                schema: schema,
+            }),
+        );
     }
 
     public listen(): void {
