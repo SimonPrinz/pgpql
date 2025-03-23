@@ -1,6 +1,10 @@
 # pgpql
 
-💡 GraphQL API that provides OpenPGP functionality.
+![GitHub License](https://img.shields.io/github/license/SimonPrinz/pgpql?style=for-the-badge)
+![GitHub Release](https://img.shields.io/github/v/release/SimonPrinz/pgpql?style=for-the-badge&include_prereleases&display_name=release)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/SimonPrinz/pgpql/actions.yaml?branch=main&style=for-the-badge)
+
+> 💡 GraphQL API that provides OpenPGP functionality.
 
 ## Usage
 
